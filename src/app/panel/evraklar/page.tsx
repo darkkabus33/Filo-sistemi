@@ -22,7 +22,7 @@ export default function EvraklarPage() {
   const [docType, setDocType] = useState<string>("gorev_formu");
   const [title, setTitle] = useState<string>("");
   const [note, setNote] = useState<string>("");
- const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -71,6 +71,9 @@ export default function EvraklarPage() {
         setTitle("");
         setNote("");
         setFile(null);
+        // Formu temizlemesi için file input'u resetliyoruz
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+        if (fileInput) fileInput.value = "";
         fetchDocuments();
       } else {
         const errData = await res.json();
@@ -81,6 +84,33 @@ export default function EvraklarPage() {
       alert("Yükleme başarısız oldu.");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDelete = async (id: number, fileUrl: string) => {
+    const confirmDelete = window.confirm("Bu evrakı arşivden tamamen silmek istediğinize emin misiniz? (Bu işlem geri alınamaz)");
+    
+    if (!confirmDelete) return;
+
+    try {
+      const res = await fetch("/api/documents", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, fileUrl }),
+      });
+
+      if (res.ok) {
+        alert("Evrak arşivden başarıyla silindi.");
+        fetchDocuments(); // Listeyi yenile
+      } else {
+        const errData = await res.json();
+        alert("Silme hatası: " + (errData.error || "Bilinmeyen hata"));
+      }
+    } catch (err) {
+      console.error("Silme işlemi başarısız:", err);
+      alert("Silme işlemi sırasında bir hata oluştu.");
     }
   };
 
@@ -195,11 +225,11 @@ export default function EvraklarPage() {
               Bu tarihe ait henüz yüklenmiş evrak bulunmuyor.
             </div>
           ) : (
-            <div className="space-y-3 overflow-y-auto max-h-[500px]">
+            <div className="space-y-3 overflow-y-auto max-h-[500px] pr-2">
               {documents.map((doc) => (
                 <div
                   key={doc.id}
-                  className="flex items-center justify-between p-3.5 bg-slate-950 border border-slate-800/80 rounded-xl hover:border-slate-700 transition"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-3.5 bg-slate-950 border border-slate-800/80 rounded-xl hover:border-slate-700 transition gap-3"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -219,14 +249,22 @@ export default function EvraklarPage() {
                       Ekleyen: {doc.createdBy || "Sistem"}
                     </p>
                   </div>
-                  <a
-                    href={doc.fileUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
-                  >
-                    <span>👁️</span> Görüntüle
-                  </a>
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <a
+                      href={doc.fileUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
+                    >
+                      <span>👁️</span> İncele
+                    </a>
+                    <button
+                      onClick={() => handleDelete(doc.id, doc.fileUrl)}
+                      className="px-3 py-1.5 bg-red-900/30 hover:bg-red-900/60 text-red-400 border border-red-900/50 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
+                    >
+                      <span>🗑️</span> Sil
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
