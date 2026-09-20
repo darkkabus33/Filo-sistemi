@@ -21,11 +21,10 @@ export default function EvraklarPage() {
   const [docType, setDocType] = useState<string>("gorev_formu");
   const [title, setTitle] = useState<string>("");
   const [note, setNote] = useState<string>("");
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File null |>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  // Belgeleri getir
   const fetchDocuments = async () => {
     setLoading(true);
     try {
@@ -45,7 +44,6 @@ export default function EvraklarPage() {
     fetchDocuments();
   }, [selectedDate]);
 
-  // Dosya yükleme işlemi
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!file || !title) {
@@ -87,7 +85,6 @@ export default function EvraklarPage() {
 
   return (
     <div className="space-y-6">
-      {/* Başlık */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-100">
@@ -97,7 +94,6 @@ export default function EvraklarPage() {
             Günlük görev formları, yakıt POS slipleri ve faturaları tarihe göre yönetin.
           </p>
         </div>
-        {/* Tarih Filtresi */}
         <div className="flex items-center gap-2 bg-slate-900 border border-slate-800 rounded-xl p-2">
           <span className="text-xs text-slate-400 font-medium px-2">Arşiv Tarihi:</span>
           <input
@@ -110,7 +106,6 @@ export default function EvraklarPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Sol Taraf: Yeni Evrak Yükleme Formu */}
         <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-xl">
           <h2 className="text-base font-semibold text-slate-200 mb-4 flex items-center gap-2">
             <span>📤</span> Yeni Evrak Yükle ({selectedDate})
@@ -182,7 +177,6 @@ export default function EvraklarPage() {
           </form>
         </div>
 
-        {/* Sağ Taraf: Seçilen Tarihteki Evrak Listesi */}
         <div className="lg:col-span-2 bg-slate-900/60 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-slate-200 flex items-center gap-2">
@@ -195,6 +189,49 @@ export default function EvraklarPage() {
 
           {loading ? (
             <div className="py-12 text-center text-slate-500">Arşiv yükleniyor...</div>
-          Eğer veritabanı bağlantısı kurulduysa, bu arayüzü ekledikten sonra arka planda çalışacak olan Vercel Blob yükleme API uç noktasını (`/api/documents/upload`) hazırlamamız gerekecek. 
-          
-          Bu arayüz kodunu projenize ekleyip kaydettiğinizde bana haber verin, hemen ardından dosya yükleme işlemlerini yönetecek API kodunu da yazalım!
+          ) : documents.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 border border-dashed border-slate-800 rounded-xl">
+              Bu tarihe ait henüz yüklenmiş evrak bulunmuyor.
+            </div>
+          ) : (
+            <div className="space-y-3 overflow-y-auto max-h-[500px]">
+              {documents.map((doc) => (
+                <div
+                  key={doc.id}
+                  className="flex items-center justify-between p-3.5 bg-slate-950 border border-slate-800/80 rounded-xl hover:border-slate-700 transition"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded bg-sky-500/10 text-sky-400">
+                        {doc.docType === "gorev_formu"
+                          ? "Görev Formu"
+                          : doc.docType === "pos_slip"
+                          ? "Yakıt POS"
+                          : doc.docType === "fatura"
+                          ? "Fatura"
+                          : "Diğer"}
+                      </span>
+                      <h3 className="text-sm font-medium text-slate-200">{doc.title}</h3>
+                    </div>
+                    {doc.note && <p className="text-xs text-slate-400">{doc.note}</p>}
+                    <p className="text-[11px] text-slate-500">
+                      Ekleyen: {doc.createdBy || "Sistem"}
+                    </p>
+                  </div>
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium rounded-lg transition flex items-center gap-1.5"
+                  >
+                    <span>👁️</span> Görüntüle
+                  </a>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
