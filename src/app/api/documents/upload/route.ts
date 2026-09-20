@@ -26,7 +26,7 @@ export async function POST(request: Request) {
 
     const filename = `evraklar/${Date.now()}-${file.name}`;
     const blob = await put(filename, file, {
-      access: "private",
+      access: "public",
     });
 
     await db.insert(documents).values({
