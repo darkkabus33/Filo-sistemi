@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@types/nodemailer": "^6.4.15",
     "dotenv": "17.3.1",
     "drizzle-orm": "0.45.2",
     "jose": "^6.2.12",
