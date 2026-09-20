@@ -11,6 +11,7 @@ interface DocumentItem {
   fileUrl: string;
   note: string | null;
   createdAt: string;
+  createdBy: string | null;
 }
 
 export default function EvraklarPage() {
