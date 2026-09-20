@@ -90,3 +90,16 @@ export type Driver = typeof drivers.$inferSelect;
 export type Vehicle = typeof vehicles.$inferSelect;
 export type Service = typeof services.$inferSelect;
 export type KmLog = typeof kmLogs.$inferSelect;
+export const documents = pgTable("documents", {
+  id: serial("id").primaryKey(),
+  vehicleId: integer("vehicle_id"), // Hangi araca ait olduğu (isteğe bağlı)
+  docType: text("doc_type").notNull(), // 'gorev_formu' | 'pos_slip' | 'fatura' | 'diger'
+  docDate: date("doc_date").notNull(), // Belgenin / İşlemin tarihi (Filtreleme bunun üzerinden olacak)
+  title: text("title").notNull(), // Örn: 20 Eylül Günlük Görev Formu veya Yakıt Fişi
+  fileUrl: text("file_url").notNull(), // Vercel Blob dosya adresi (URL)
+  note: text("note"), // Ek açıklama
+  createdBy: text("created_by"),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export type Document = typeof documents.$inferSelect;
