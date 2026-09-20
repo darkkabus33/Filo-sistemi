@@ -21,7 +21,7 @@ export default function EvraklarPage() {
   const [docType, setDocType] = useState<string>("gorev_formu");
   const [title, setTitle] = useState<string>("");
   const [note, setNote] = useState<string>("");
-  const [file, setFile] = useState<File null |>(null);
+ const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
