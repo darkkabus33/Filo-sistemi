@@ -20,7 +20,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Tarih belirtilmedi" }, { status: 400 });
     }
 
-    // Seçilen tarihe göre evrakları getir
     const list = await db
       .select()
       .from(documents)
