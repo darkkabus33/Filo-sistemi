@@ -10,6 +10,7 @@ const NAV = [
   { href: "/panel/suruculer", label: "Sürücüler", icon: "👥" },
   { href: "/panel/servisler", label: "Servis & Bakım", icon: "🛠" },
   { href: "/panel/giderler", label: "Gider Raporu", icon: "📊" },
+  { href: "/panel/evraklar", label: "Evrak Kayıt", icon: "📁" },
   { href: "/panel/kullanicilar", label: "İl Müdürleri", icon: "🛡", adminOnly: true },
   { href: "/panel/uyarilar", label: "Uyarı Merkezi", icon: "🔔" },
 ];
